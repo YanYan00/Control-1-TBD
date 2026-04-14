@@ -43,3 +43,18 @@ CREATE TABLE flight(
     date_flight DATETIME,
     hour_flight TIME
 );
+CREATE TABLE plane(
+	id_plane INT PRIMARY KEY AUTO_INCREMENT,
+    model VARCHAR(15),
+    last_maintenance DATETIME,
+    id_company INT NOT NULL
+);
+CREATE TABLE  employee(
+	id_employee INT PRIMARY KEY AUTO_INCREMENT,
+    salary INT,
+    title VARCHAR(30)
+);
+CREATE TABLE flight_employee(
+	id_employee INT NOT NULL,
+    id_flight INT NOT NULL
+)
