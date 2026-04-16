@@ -17,20 +17,25 @@ CREATE TABLE client (
     passport_number VARCHAR(40),
     nationality VARCHAR(40)
 );
-CREATE TABLE  employee(
-	id_employee INT PRIMARY KEY AUTO_INCREMENT,
-    firstname VARCHAR(50),
-    lastname VARCHAR(50),
-    salary INT,
-    title VARCHAR(30)
-);
+
 CREATE TABLE company (
     id_company INT PRIMARY KEY AUTO_INCREMENT,
     name_company VARCHAR(50),
     phone VARCHAR(40),
     email VARCHAR(100)
 );
+
 -- Tables with dependency of other
+CREATE TABLE  employee(
+	id_employee INT PRIMARY KEY AUTO_INCREMENT,
+    firstname VARCHAR(50),
+    lastname VARCHAR(50),
+    salary INT,
+    title VARCHAR(30),
+    id_company INT,
+    FOREIGN KEY (id_company) REFERENCES company(id_company) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 CREATE TABLE flight(
     id_flight INT PRIMARY KEY AUTO_INCREMENT,
     origin VARCHAR(60),
@@ -41,12 +46,16 @@ CREATE TABLE flight(
     id_plane INT,
     FOREIGN KEY (id_plane) REFERENCES plane(id_plane) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
 CREATE TABLE ticket (
     id_ticket INT PRIMARY KEY AUTO_INCREMENT,
     date_purchase DATETIME,
-    id_client INT NOT NULL
-    FOREIGN KEY (id_client) REFERENCES client(id_client) ON DELETE CASCADE ON UPDATE CASCADE
+    id_client INT NOT NULL,
+    FOREIGN KEY (id_client) REFERENCES client(id_client) ON DELETE CASCADE ON UPDATE CASCADE,
+    id_flight INT NOT NULL,
+    FOREIGN KEY (id_flight) REFERENCES flight(id_flight) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
 CREATE TABLE seat ( 
     id_seat INT PRIMARY KEY AUTO_INCREMENT,
     number_seat VARCHAR(3),
@@ -58,7 +67,7 @@ CREATE TABLE seat (
 
 CREATE TABLE plane(
 	id_plane INT PRIMARY KEY AUTO_INCREMENT,
-    model VARCHAR(15),
+    model VARCHAR(30),
     last_maintenance DATETIME,
     id_company INT NOT NULL,
     FOREIGN KEY (id_company) REFERENCES company(id_company) ON DELETE CASCADE ON UPDATE CASCADE
@@ -66,7 +75,7 @@ CREATE TABLE plane(
 
 CREATE TABLE flight_employee(
 	id_employee INT NOT NULL,
-    id_flight INT NOT NULL,
     FOREIGN KEY (id_employee) REFERENCES employee(id_employee) ON DELETE CASCADE ON UPDATE CASCADE,
+    id_flight INT NOT NULL,
     FOREIGN KEY (id_flight) REFERENCES flight(id_flight) ON DELETE CASCADE ON UPDATE CASCADE
-)
+);
