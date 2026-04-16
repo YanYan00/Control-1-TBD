@@ -13,7 +13,7 @@ CREATE DATABASE IF NOT EXISTS airport;
 USE airport;
 -- Tables without dependency of other
 
-CREATE TABLE client (
+CREATE TABLE clients (
     id_client INT PRIMARY KEY AUTO_INCREMENT,
     firstname VARCHAR(30),
     lastname VARCHAR(30),
@@ -64,7 +64,7 @@ CREATE TABLE ticket (
     date_purchase DATETIME,
     id_client INT NOT NULL,
     id_flight INT NOT NULL,
-    FOREIGN KEY (id_client) REFERENCES client(id_client) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_client) REFERENCES clients(id_client) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (id_flight) REFERENCES flight(id_flight) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -83,8 +83,6 @@ CREATE TABLE seat (
     id_ticket INT NOT NULL,
     FOREIGN KEY (id_ticket) REFERENCES ticket(id_ticket) ON DELETE CASCADE ON UPDATE CASCADE
 );
-
-
 
 
 
