@@ -10,6 +10,7 @@
 */
 
 -- Tables without dependency of other
+
 CREATE TABLE client (
     id_client INT PRIMARY KEY AUTO_INCREMENT,
     firstname VARCHAR(30),
