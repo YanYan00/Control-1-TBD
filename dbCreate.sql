@@ -8,7 +8,9 @@
         Belen Ibañez
         Vicente Rojas
 */
-
+DROP DATABASE IF EXISTS airport;
+CREATE DATABASE IF NOT EXISTS airport;
+USE airport;
 -- Tables without dependency of other
 
 CREATE TABLE client (
@@ -37,6 +39,15 @@ CREATE TABLE  employee(
     FOREIGN KEY (id_company) REFERENCES company(id_company) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+CREATE TABLE plane(
+	id_plane INT PRIMARY KEY AUTO_INCREMENT,
+    model VARCHAR(30),
+    last_maintenance DATETIME,
+    id_company INT NOT NULL,
+    FOREIGN KEY (id_company) REFERENCES company(id_company) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
 CREATE TABLE flight(
     id_flight INT PRIMARY KEY AUTO_INCREMENT,
     origin VARCHAR(60),
@@ -52,7 +63,14 @@ CREATE TABLE ticket (
     id_ticket INT PRIMARY KEY AUTO_INCREMENT,
     date_purchase DATETIME,
     id_client INT NOT NULL,
+    id_flight INT NOT NULL,
     FOREIGN KEY (id_client) REFERENCES client(id_client) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_flight) REFERENCES flight(id_flight) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE flight_employee(
+	id_employee INT NOT NULL,
+    FOREIGN KEY (id_employee) REFERENCES employee(id_employee) ON DELETE CASCADE ON UPDATE CASCADE,
     id_flight INT NOT NULL,
     FOREIGN KEY (id_flight) REFERENCES flight(id_flight) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -66,17 +84,7 @@ CREATE TABLE seat (
     FOREIGN KEY (id_ticket) REFERENCES ticket(id_ticket) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE plane(
-	id_plane INT PRIMARY KEY AUTO_INCREMENT,
-    model VARCHAR(30),
-    last_maintenance DATETIME,
-    id_company INT NOT NULL,
-    FOREIGN KEY (id_company) REFERENCES company(id_company) ON DELETE CASCADE ON UPDATE CASCADE
-);
 
-CREATE TABLE flight_employee(
-	id_employee INT NOT NULL,
-    FOREIGN KEY (id_employee) REFERENCES employee(id_employee) ON DELETE CASCADE ON UPDATE CASCADE,
-    id_flight INT NOT NULL,
-    FOREIGN KEY (id_flight) REFERENCES flight(id_flight) ON DELETE CASCADE ON UPDATE CASCADE
-);
+
+
+
