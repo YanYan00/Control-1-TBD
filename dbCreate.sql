@@ -8,6 +8,8 @@
         Belen Ibañez
         Vicente Rojas
 */
+
+-- Tables without dependency
 CREATE TABLE clients (
     id_client SERIAL PRIMARY KEY,
     firstname VARCHAR(30),
@@ -67,7 +69,7 @@ CREATE TABLE flight_employee (
     id_flight INT NOT NULL,
     CONSTRAINT fk_employee FOREIGN KEY (id_employee) REFERENCES employee(id_employee) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT fk_flight_emp FOREIGN KEY (id_flight) REFERENCES flight(id_flight) ON DELETE CASCADE ON UPDATE CASCADE,
-    PRIMARY KEY (id_employee, id_flight) -- Se agrega una llave primaria compuesta por buena práctica
+    PRIMARY KEY (id_employee, id_flight)
 );
 
 CREATE TABLE seat ( 

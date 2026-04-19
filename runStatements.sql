@@ -71,3 +71,30 @@ GROUP BY p.id_plane
 ORDER BY total_aviones ASC
 LIMIT 1;
 
+--query 9
+SELECT DISTINCT ON (EXTRACT(YEAR FROM f.date_flight)) c.name_company AS company, AVG(e.salary) AS salary, EXTRACT(YEAR FROM f.date_flight) AS year_counting 
+FROM flight f
+INNER JOIN flight_employee fe ON fe.id_flight = f.id_flight 
+INNER JOIN employee e ON e.id_employee = fe.id_employee
+INNER JOIN company c ON e.id_company = c.id_company
+WHERE EXTRACT(YEAR FROM f.date_flight) BETWEEN EXTRACT(YEAR FROM CURRENT_DATE) - 9 AND EXTRACT(YEAR FROM CURRENT_DATE)
+GROUP BY EXTRACT(YEAR FROM f.date_flight), c.name_company
+ORDER BY EXTRACT(YEAR FROM f.date_flight), AVG(e.salary) DESC;
+
+--query 10
+SELECT c.name_company, p.model,COUNT(f.id_flight) AS flights
+FROM plane p
+INNER JOIN company c ON p.id_company = c.id_company
+INNER JOIN flight f ON p.id_plane = f.id_plane
+WHERE EXTRACT(YEAR FROM f.date_flight) = 2021
+GROUP BY p.id_company ,c.name_company,p.model
+HAVING COUNT(f.id_flight) = (
+	SELECT COUNT(f2.id_flight)
+	FROM plane p2
+	INNER JOIN company c2 ON p2.id_company = c2.id_company
+	INNER JOIN flight f2 ON p2.id_plane = f2.id_plane
+	WHERE EXTRACT(YEAR FROM f2.date_flight) = 2021 AND p2.id_company = p.id_company
+	GROUP BY p2.model
+	ORDER BY COUNT(f2.id_flight) DESC
+	LIMIT 1
+);
