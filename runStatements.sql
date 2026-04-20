@@ -8,7 +8,9 @@
         Belen Ibañez
         Vicente Rojas
 */
+
 -- query 1
+--Lista de lugares al que más viajan los chilenos por año (durante los últimos 4 años)
 SELECT f.destination, COUNT(*) AS total_viajes
 FROM ticket t
 JOIN clients c ON t.id_client = c.id_client
@@ -20,7 +22,7 @@ ORDER BY total_viajes DESC;
 
 
 -- query 2 
--- listar las secciones mas compradas por argentinos
+-- Lista con las secciones de vuelos más compradas por argentinos
 SELECT s.section, COUNT(*) AS total_compras 
 FROM ticket t 
 JOIN clients c ON c.id_client = t.id_client
@@ -31,6 +33,7 @@ ORDER BY total_compras DESC;
 
 
 -- query 3
+-- Lista mensual de países que más gastan en volar (durante los últimos 4 años)
 SELECT mes, nationality, total_personas
 FROM (
     SELECT 
@@ -50,6 +53,7 @@ ORDER BY mes; -- sacame solo los ranking 1 ordenados por mes
 
 
 -- query 4
+-- Lista de pasajeros que viajan en “First Class” más de 4 veces al mes
 SELECT 
     c.firstname, 
     c.lastname, 
@@ -63,7 +67,9 @@ GROUP BY mes, c.id_client, c.firstname, c.lastname -- se ordena por mes  y perso
 HAVING COUNT(*) > 4 -- que tenga mas de 4 vuelos
 ORDER BY mes ASC, cantidad_vuelos DESC;
 
+
 -- query 5
+-- Avión con menos vuelos
 SELECT p.id_plane, COUNT(f.id_flight) AS total_aviones
 FROM plane p
 LEFT JOIN flight f ON p.id_plane = f.id_plane
@@ -71,7 +77,60 @@ GROUP BY p.id_plane
 ORDER BY total_aviones ASC
 LIMIT 1;
 
+
+-- query 6
+-- Lista mensual de pilotos con mayor sueldo (durante los últimos 4 años)
+
+
+--query 7
+-- Lista de compañías indicando cuál es el avión que más ha recaudado en los últimos 4 años y cuál es el monto recaudado
+WITH recaudation AS (
+    SELECT
+        c.id_company,
+        c.name_company,
+        p.id_plane,
+        p.model AS plane_model,
+        SUM(s.price) AS total_recaudation,
+        ROW_NUMBER() OVER (
+            PARTITION BY c.id_company
+            ORDER BY SUM(s.price) DESC
+        ) AS rn
+    FROM company c
+    JOIN plane p ON p.id_company = c.id_company
+    JOIN flight f ON f.id_plane = p.id_plane
+    JOIN ticket t ON t.id_flight = f.id_flight
+    JOIN seat s ON s.id_ticket = t.id_ticket
+    WHERE f.date_flight >= NOW() - INTERVAL '4 years'
+    GROUP BY c.id_company, c.name_company, p.id_plane, p.model
+)
+SELECT
+    id_company,
+    name_company,
+    id_plane,
+    plane_model,
+    total_recaudation
+FROM recaudation
+WHERE rn = 1
+ORDER BY id_company;
+
+
+--query 8
+-- Lista de compañías y total de aviones por año (en los últimos 10 años)
+SELECT
+    c.id_company,
+    c.name_company,
+    EXTRACT(YEAR FROM f.date_flight) AS years,
+    COUNT(DISTINCT p.id_plane) AS total_planes
+FROM company c
+JOIN plane p ON p.id_company = c.id_company
+JOIN flight f ON f.id_plane = p.id_plane
+WHERE f.date_flight >= NOW() - INTERVAL '10 years'
+GROUP BY c.id_company, c.name_company, EXTRACT(YEAR FROM f.date_flight)
+ORDER BY years;
+
+
 --query 9
+-- Lista anual de compañías que en promedio han pagado más a sus empleados (durante los últimos 10 años).
 SELECT DISTINCT ON (EXTRACT(YEAR FROM f.date_flight)) c.name_company AS company, AVG(e.salary) AS salary, EXTRACT(YEAR FROM f.date_flight) AS year_counting 
 FROM flight f
 INNER JOIN flight_employee fe ON fe.id_flight = f.id_flight 
@@ -81,7 +140,9 @@ WHERE EXTRACT(YEAR FROM f.date_flight) BETWEEN EXTRACT(YEAR FROM CURRENT_DATE) -
 GROUP BY EXTRACT(YEAR FROM f.date_flight), c.name_company
 ORDER BY EXTRACT(YEAR FROM f.date_flight), AVG(e.salary) DESC;
 
+
 --query 10
+-- Modelo de avión más usado por compañía durante el 2021
 SELECT c.name_company, p.model,COUNT(f.id_flight) AS flights
 FROM plane p
 INNER JOIN company c ON p.id_company = c.id_company

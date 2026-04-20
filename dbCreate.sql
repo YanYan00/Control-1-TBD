@@ -80,6 +80,3 @@ CREATE TABLE seat (
     id_ticket INT NOT NULL,
     CONSTRAINT fk_ticket FOREIGN KEY (id_ticket) REFERENCES ticket(id_ticket) ON DELETE CASCADE ON UPDATE CASCADE
 );
-
-
-
