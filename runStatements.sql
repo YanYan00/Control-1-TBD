@@ -73,8 +73,28 @@ LIMIT 1;
 
 -- query 6
 -- Lista mensual de pilotos con mayor sueldo (durante los últimos 4 años)
-
-
+SELECT
+	e.firstname,
+	e.lastname,
+	e.salary,
+	EXTRACT(MONTH FROM f.date_flight) AS mes,
+	EXTRACT(YEAR FROM f.date_flight) AS anio
+FROM employee e
+JOIN flight_employee f_e ON e.id_employee = f_e.id_employee
+JOIN flight f ON f_e.id_flight = f.id_flight
+WHERE e.title = 'Pilot'
+	AND f.date_flight >= CURRENT_DATE - INTERVAL '4 years'
+	AND e.salary = (
+		SELECT MAX(es.salary)
+		FROM employee es
+		JOIN flight_employee f_es ON es.id_employee = f_es.id_employee
+		JOIN flight fse ON f_es.id_flight = fse.id_flight
+		WHERE es.title = 'Pilot'
+			AND EXTRACT(MONTH FROM fse.date_flight) = EXTRACT(MONTH FROM f.date_flight)
+			AND EXTRACT(YEAR FROM fse.date_flight) = EXTRACT(YEAR FROM f.date_flight)
+	)
+ORDER BY anio DESC, mes DESC;
+	
 --query 7
 -- Lista de compañías indicando cuál es el avión que más ha recaudado en los últimos 4 años y cuál es el monto recaudado
 WITH recaudation AS (
