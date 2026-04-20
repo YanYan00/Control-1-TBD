@@ -34,23 +34,17 @@ ORDER BY total_compras DESC;
 
 -- query 3
 -- Lista mensual de países que más gastan en volar (durante los últimos 4 años)
-SELECT mes, nationality, total_personas
-FROM (
-    SELECT 
-        EXTRACT(MONTH FROM f.date_flight) AS mes, 
-        c.nationality, 
-        COUNT(*) AS total_personas,
-        ROW_NUMBER() OVER(PARTITION BY EXTRACT(MONTH FROM f.date_flight) ORDER BY COUNT(*) DESC) AS ranking -- por cada mes se hace un ranking del total de personas
-    FROM ticket t
-    JOIN clients c ON t.id_client = c.id_client
-    JOIN flight f ON f.id_flight = t.id_flight -- Se crea la tabla que relaciona pasajero con vuelo
-    WHERE f.date_flight >= CURRENT_DATE - INTERVAL '4 years'  -- filtro 4 años
-      AND f.date_flight <= CURRENT_DATE
-    GROUP BY mes, c.nationality -- Se ordena esta tabla de pasajero vuelo por pais
-) AS tabla_ranking
-WHERE ranking = 1
-ORDER BY mes; -- sacame solo los ranking 1 ordenados por mes
-
+-- query 3
+SELECT DISTINCT ON (mes)
+    EXTRACT(MONTH FROM f.date_flight) AS mes,
+    c.nationality,
+    COUNT(*) AS total_personas
+FROM ticket t
+JOIN clients c ON t.id_client = c.id_client
+JOIN flight f ON f.id_flight = t.id_flight
+WHERE f.date_flight >= NOW() - INTERVAL '4 years'
+GROUP BY mes, c.nationality
+ORDER BY mes, total_personas DESC;
 
 -- query 4
 -- Lista de pasajeros que viajan en “First Class” más de 4 veces al mes
@@ -61,12 +55,11 @@ SELECT
     COUNT(*) AS cantidad_vuelos
 FROM ticket t
 JOIN clients c ON t.id_client = c.id_client
-JOIN seat s ON t.id_ticket = s.id_ticket  -- Tabla union persona asiento por ticket
-WHERE s.section = 'First Class' -- todos los primera lase
-GROUP BY mes, c.id_client, c.firstname, c.lastname -- se ordena por mes  y persona
-HAVING COUNT(*) > 4 -- que tenga mas de 4 vuelos
+JOIN seat s ON t.id_ticket = s.id_ticket
+WHERE s.section = 'First Class'
+GROUP BY mes, c.id_client, c.firstname, c.lastname
+HAVING COUNT(*) > 4 -- 4 Veces no existen pero 2 si
 ORDER BY mes ASC, cantidad_vuelos DESC;
-
 
 -- query 5
 -- Avión con menos vuelos
