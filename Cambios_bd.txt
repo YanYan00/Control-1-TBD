@@ -1,0 +1,5 @@
+Los cambios aplicados en la bd con referencia al MER fueron eliminar tablas que consideramos no necesarias como entidades separadas: MODELO y SUELDO los convertimos en simples atributos de plane y employee respectivamente, ya que no nos parecia buena idea crear una tabla solo para guardar un dato. También eliminamos CLIENTE_COMP porque esa relación ya existía de forma indirecta a través de otras tablas, lo que la hacía redundante a nuestro parecer.
+
+Por otro lado, unificamos SECCION y COSTO en una sola tabla seat, ya que representaban datos del pasaje especificos.
+
+Lo que se mantuvo y consideramos esencial fue la tabla intermedia flight_employee, necesaria para representar correctamente la relación de muchos a muchos entre vuelos y empleados.

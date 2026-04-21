@@ -1,0 +1,13 @@
+Secuencia de comandos para la creacion y uso de la base de datos
+
+1) Disclaimer despues de cada comando se debe ingresar la contraseña de postgres del computador donde se testea
+
+2) Primero el cmd debe estar dentro de la carpeta donde se encuentran los archivos .sql
+
+3) Para la creación de la base de datos, se debe ingresar el siguiente comando: psql -U postgres -c "CREATE DATABASE airport;"
+
+4) Luego de crear la base de datos se deben construir las tablas, con el siguiente comando: psql -U postgres -d airport -f dbCreate.sql
+
+5) Despues se debe insertar la data a las tablas con el siguiente comando: psql -U postgres -d airport -f loadData.sql
+
+6) Finalmente se ejecutan las query con el siguiente comando, Disclaimer el siguiente comando hace correr todas las query's: psql -U postgres -d airport -f runStatements.sql
